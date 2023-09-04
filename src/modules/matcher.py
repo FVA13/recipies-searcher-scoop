@@ -4,6 +4,7 @@ import re
 import logging
 
 from db_create import read_from_db
+# from scoop.modules.db_create import read_from_db
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
@@ -46,12 +47,14 @@ def is_length_match(l, matches):
 def get_matching_recipies(products_input: str, text_description: str = None):
     # think of sorting strategy; for now based on the amount of ingredients
     matches = get_products_matches(products_input)
-    recipies = read_from_db(
-        """
-        select  *
-        from    recipies
-        """
-    )
+    # recipies = pd.read_pickle("../data/processed/dbo_recipies.pkl")
+    recipies = pd.read_pickle("../../data/processed/dbo_recipies.pkl")
+    # recipies = read_from_db(
+    #     """
+    #     select  *
+    #     from    recipies
+    #     """
+    # )
     df = (
         recipies.assign(
             is_match=lambda df_: df_.ingredients_ids.apply(
@@ -76,4 +79,4 @@ def get_matching_recipies(products_input: str, text_description: str = None):
     return df
 
 
-get_matching_recipies("Молоко, Клубника Сахар")
+# get_matching_recipies("Молоко, Клубнка Сахар")

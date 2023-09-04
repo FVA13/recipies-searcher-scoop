@@ -1,5 +1,5 @@
 import streamlit as st
-from modules.matcher import get_matching_recipies
+from matcher import get_matching_recipies
 
 
 st.set_page_config(
@@ -20,7 +20,7 @@ def main():
     if do_search:
         st.spinner()
         with st.spinner(text="In progress"):
-            search_result = get_matching_recipies(products_input, description_input)
+            search_result = get_matching_recipies(products_input, description_input)[['name', 'ingredients']]
             st.table(search_result)
             st.success("Done \N{hugging face}")
 

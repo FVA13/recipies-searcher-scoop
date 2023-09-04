@@ -8,7 +8,13 @@ import logging
 import os
 from collections import Counter
 
-from scoop.functions import json_to_norm_list, flatten_lists
+# import sys
+#
+# sys.path.insert(1, "/scoop/functions")
+
+from functions import json_to_norm_list, flatten_lists
+
+# from scoop.functions import json_to_norm_list, flatten_lists
 
 # logging.basicConfig(level=logging.INFO)
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
@@ -26,7 +32,8 @@ device = torch.device("cpu")
 
 
 def insert_into_db(df, table_name):
-    db_file = "../data/processed/scoop.db"
+    # db_file = "../data/processed/scoop.db"
+    db_file = "../../data/processed/scoop.db"
     try:
         conn = sqlite3.connect(db_file)
         df.to_sql(table_name, conn, if_exists="replace", index=False, index_label="id")
@@ -36,7 +43,8 @@ def insert_into_db(df, table_name):
 
 
 def read_from_db(query):
-    conn = sqlite3.connect("../data/processed/scoop.db")
+    # conn = sqlite3.connect("../data/processed/scoop.db")
+    conn = sqlite3.connect("../../data/processed/scoop.db")
     df = pd.read_sql(query, conn)
     return df
 
@@ -44,7 +52,7 @@ def read_from_db(query):
 def create_products_data():
     logger.info("update/creation of products table has begun")
     df = (
-        pd.read_csv("../data/raw/povarenok_recipes_2021_06_16.csv").dropna(
+        pd.read_csv("../../data/raw/povarenok_recipes_2021_06_16.csv").dropna(
             subset=["ingredients"]
         )
     ).ingredients.parallel_apply(lambda x: json_to_norm_list(x))
@@ -83,7 +91,7 @@ def create_recipies_data():
     logger.info("update/creation of recipies table has begun")
     model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2", device=device)
     data = (
-        pd.read_csv("../data/raw/povarenok_recipes_2021_06_16.csv")
+        pd.read_csv("../../data/raw/povarenok_recipes_2021_06_16.csv")
         .drop(columns=["url"])
         .dropna(subset=["ingredients"])
         .reset_index(drop=True)
@@ -109,7 +117,7 @@ def create_recipies_data():
             )
         )
     )
-    data.to_pickle("desperate_backup.pkl")
+    # data.to_pickle("dbo_recipies.pkl")
     insert_into_db(data, "recipies")
     logger.info(
         "recipies table was successfully created/updated; {} entries were added".format(
