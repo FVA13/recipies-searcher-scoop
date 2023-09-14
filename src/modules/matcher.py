@@ -11,6 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 def get_products_matches(products_input: str):
+    logger.info("def call: get_products_matches")
     products = re.split("; |, |\;|\n|\\s", products_input)
     db_products = read_from_db(
         """
@@ -45,6 +46,7 @@ def is_length_match(l, matches):
 
 
 def get_matching_recipies(products_input: str, text_description: str = None):
+    logger.info("def call: get_matching_recipies")
     # think of sorting strategy; for now based on the amount of ingredients
     matches = get_products_matches(products_input)
     # recipies = pd.read_pickle("../data/processed/dbo_recipies.pkl")
