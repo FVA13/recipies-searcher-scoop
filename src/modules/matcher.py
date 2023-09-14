@@ -50,15 +50,15 @@ def is_length_match(l, matches):
 def get_matching_recipies(products_input: str, text_description: str = None):
     logger.info("def call: get_matching_recipies")
     path = '../../data/processed'
+    path_to = '../../data'
     try:
         if not os.listdir(path):
             url = "https://drive.google.com/drive/folders/10cmVnMrmZAzaH_8vpWfCTbqd3eI_zaaU?usp=sharing"
-            gdown.download_folder(url, output=path)
+            gdown.download_folder(url, output=path_to)
     except FileNotFoundError:
-        os.mkdir('../../data')
-        os.mkdir('../../data/processed')
+        os.mkdir(path_to)
         url = "https://drive.google.com/drive/folders/10cmVnMrmZAzaH_8vpWfCTbqd3eI_zaaU?usp=sharing"
-        gdown.download_folder(url, output='../../data')
+        gdown.download_folder(url, output=path_to)
     # if not os.listdir('../../data/processed'):
     #     url = "https://drive.google.com/drive/folders/10cmVnMrmZAzaH_8vpWfCTbqd3eI_zaaU?usp=sharing"
     #     gdown.download_folder(url, output='../../data')
