@@ -6,6 +6,7 @@ import re
 import os
 
 from db_create import read_from_db
+
 # from scoop.modules.db_create import read_from_db
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
@@ -49,8 +50,8 @@ def is_length_match(l, matches):
 
 def get_matching_recipies(products_input: str, text_description: str = None):
     logger.info("def call: get_matching_recipies")
-    path = '../../data/processed'
-    path_to = '../../data'
+    path = "../../data/processed"
+    path_to = "../../data"
     try:
         if not os.listdir(path):
             url = "https://drive.google.com/drive/folders/10cmVnMrmZAzaH_8vpWfCTbqd3eI_zaaU?usp=sharing"
