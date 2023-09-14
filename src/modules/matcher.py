@@ -1,7 +1,9 @@
-import pandas as pd
 from Levenshtein import distance as lev_distance
-import re
+import pandas as pd
 import logging
+import gdown
+import re
+import os
 
 from db_create import read_from_db
 # from scoop.modules.db_create import read_from_db
@@ -47,6 +49,19 @@ def is_length_match(l, matches):
 
 def get_matching_recipies(products_input: str, text_description: str = None):
     logger.info("def call: get_matching_recipies")
+    path = '../../data/processed'
+    try:
+        if not os.listdir(path):
+            url = "https://drive.google.com/drive/folders/10cmVnMrmZAzaH_8vpWfCTbqd3eI_zaaU?usp=sharing"
+            gdown.download_folder(url, output=path)
+    except FileNotFoundError:
+        os.mkdir('../../data')
+        os.mkdir('../../data/processed')
+        url = "https://drive.google.com/drive/folders/10cmVnMrmZAzaH_8vpWfCTbqd3eI_zaaU?usp=sharing"
+        gdown.download_folder(url, output='../../data')
+    # if not os.listdir('../../data/processed'):
+    #     url = "https://drive.google.com/drive/folders/10cmVnMrmZAzaH_8vpWfCTbqd3eI_zaaU?usp=sharing"
+    #     gdown.download_folder(url, output='../../data')
     # think of sorting strategy; for now based on the amount of ingredients
     matches = get_products_matches(products_input)
     # recipies = pd.read_pickle("../data/processed/dbo_recipies.pkl")
