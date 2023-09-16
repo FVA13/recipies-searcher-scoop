@@ -17,13 +17,28 @@ def get_products_matches(products_input: str):
     logger.info("def call: get_products_matches")
     products = re.split("; |, |\;|\n|\\s", products_input)
 
-    if not os.listdir("../../data"):
+    data_dir = "../../data"
+    processed_dir = f"{data_dir}/processed"
+    dbo_products_path = f"{processed_dir}/dbo_products.pkl"
+
+    if os.path.exists(dbo_products_path):
+        db_products = pd.read_pickle(dbo_products_path)
+    else:
         logger.info("downloading data from S3")
         opener = urllib.request.URLopener()
         db_products = pd.read_pickle(opener.open("https://storage.yandexcloud.net/scoop/dbo_products.pkl"))
         logger.info("[DONE] downloading data from S3")
-    else:
-        db_products = pd.read_pickle("../../data/processed/dbo_products.pkl")
+
+    # try:
+    #     if not os.listdir("../../data"):
+    #         logger.info("downloading data from S3")
+    #         opener = urllib.request.URLopener()
+    #         db_products = pd.read_pickle(opener.open("https://storage.yandexcloud.net/scoop/dbo_products.pkl"))
+    #         logger.info("[DONE] downloading data from S3")
+    #     else:
+    #         db_products = pd.read_pickle("../../data/processed/dbo_products.pkl")
+    # except FileNotFoundError:
+    #     db_products = pd.read_pickle("../../data/processed/dbo_products.pkl")
 
     matches = []
     for product in products:
@@ -53,13 +68,27 @@ def is_length_match(l, matches):
 
 def get_matching_recipies(products_input: str, text_description: str = None):
     logger.info("def call: get_matching_recipies")
-    if not os.listdir("../../data"):
+
+    data_dir = "../../data"
+    processed_dir = f"{data_dir}/processed"
+    dbo_products_path = f"{processed_dir}/dbo_recipies.pkl"
+
+    if os.path.exists(dbo_products_path):
+        recipies = pd.read_pickle(dbo_products_path)
+    else:
         logger.info("downloading data from S3")
         opener = urllib.request.URLopener()
-        recipies = pd.read_pickle(opener.open("https://storage.yandexcloud.net/scoop/dbo_recipies.pkl"))
+        recipies = pd.read_pickle(opener.open("https://storage.yandexcloud.net/scoop/dbo_products.pkl"))
         logger.info("[DONE] downloading data from S3")
-    else:
-        recipies = pd.read_pickle("../../data/processed/dbo_recipies.pkl")
+
+
+    # if not os.listdir("../../data"):
+    #     logger.info("downloading data from S3")
+    #     opener = urllib.request.URLopener()
+    #     recipies = pd.read_pickle(opener.open("https://storage.yandexcloud.net/scoop/dbo_recipies.pkl"))
+    #     logger.info("[DONE] downloading data from S3")
+    # else:
+    #     recipies = pd.read_pickle("../../data/processed/dbo_recipies.pkl")
 
     # think of sorting strategy; for now based on the amount of ingredients
     matches = get_products_matches(products_input)
