@@ -1,7 +1,7 @@
 from Levenshtein import distance as lev_distance
 import pandas as pd
 import logging
-import gdown
+import urllib
 import re
 import os
 
@@ -16,12 +16,15 @@ logger = logging.getLogger(__name__)
 def get_products_matches(products_input: str):
     logger.info("def call: get_products_matches")
     products = re.split("; |, |\;|\n|\\s", products_input)
-    db_products = read_from_db(
-        """
-        select  *
-        from    products
-        """
-    )
+
+    if not os.listdir("../../data"):
+        logger.info("downloading data from S3")
+        opener = urllib.request.URLopener()
+        db_products = pd.read_pickle(opener.open("https://storage.yandexcloud.net/scoop/dbo_products.pkl"))
+        logger.info("[DONE] downloading data from S3")
+    else:
+        db_products = pd.read_pickle("../../data/processed/dbo_products.pkl")
+
     matches = []
     for product in products:
         closest_match_id = (
@@ -50,29 +53,16 @@ def is_length_match(l, matches):
 
 def get_matching_recipies(products_input: str, text_description: str = None):
     logger.info("def call: get_matching_recipies")
-    path = "../../data/processed"
-    path_to = "../../data"
-    try:
-        if not os.listdir(path):
-            url = "https://drive.google.com/drive/folders/10cmVnMrmZAzaH_8vpWfCTbqd3eI_zaaU?usp=sharing"
-            gdown.download_folder(url, output=path_to)
-    except FileNotFoundError:
-        # os.mkdir(path_to)
-        url = "https://drive.google.com/drive/folders/10cmVnMrmZAzaH_8vpWfCTbqd3eI_zaaU?usp=sharing"
-        gdown.download_folder(url, output=path_to)
-    # if not os.listdir('../../data/processed'):
-    #     url = "https://drive.google.com/drive/folders/10cmVnMrmZAzaH_8vpWfCTbqd3eI_zaaU?usp=sharing"
-    #     gdown.download_folder(url, output='../../data')
+    if not os.listdir("../../data"):
+        logger.info("downloading data from S3")
+        opener = urllib.request.URLopener()
+        recipies = pd.read_pickle(opener.open("https://storage.yandexcloud.net/scoop/dbo_recipies.pkl"))
+        logger.info("[DONE] downloading data from S3")
+    else:
+        recipies = pd.read_pickle("../../data/processed/dbo_recipies.pkl")
+
     # think of sorting strategy; for now based on the amount of ingredients
     matches = get_products_matches(products_input)
-    # recipies = pd.read_pickle("../data/processed/dbo_recipies.pkl")
-    recipies = pd.read_pickle("../../data/processed/dbo_recipies.pkl")
-    # recipies = read_from_db(
-    #     """
-    #     select  *
-    #     from    recipies
-    #     """
-    # )
     df = (
         recipies.assign(
             is_match=lambda df_: df_.ingredients_ids.apply(
