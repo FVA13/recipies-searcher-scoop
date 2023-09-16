@@ -11,11 +11,12 @@ st.set_page_config(
 
 
 def main():
-    products_input = st.text_input("Enter some ingredients")
+    products_input = st.text_input("Введите пожалуйста ингредиенты") # Enter some ingredients
     description_input = st.text_input(
-        "Describe what dish you would want to cook | your mood | anything you want to \N{grinning face}"
+        # "Describe what dish you would want to cook | your mood | anything you want to \N{grinning face}"
+        "Опишите что вы хотите приготовить | ваше настроение | что-угодно \N{grinning face}"
     )
-    do_search = st.button("Get Recipies! \U0001F929")
+    do_search = st.button("Получить рецепты! \U0001F929") # Get Recipies!
 
     if do_search:
         st.spinner()
