@@ -57,7 +57,7 @@ def get_matching_recipies(products_input: str, text_description: str = None):
             url = "https://drive.google.com/drive/folders/10cmVnMrmZAzaH_8vpWfCTbqd3eI_zaaU?usp=sharing"
             gdown.download_folder(url, output=path_to)
     except FileNotFoundError:
-        os.mkdir(path_to)
+        # os.mkdir(path_to)
         url = "https://drive.google.com/drive/folders/10cmVnMrmZAzaH_8vpWfCTbqd3eI_zaaU?usp=sharing"
         gdown.download_folder(url, output=path_to)
     # if not os.listdir('../../data/processed'):
