@@ -18,22 +18,21 @@ st.set_page_config(
 """
 st.markdown("<br>", unsafe_allow_html=True)
 
-# logo_path = os.path.abspath("../../logo.svg")
-logo_path = st.secrets["static_path"] + "/logo.svg"
+logo_path = os.path.abspath("logo.svg")
 with open(logo_path, "r") as f:
     svg_text = f.read()
 
 modified_svg_text = svg_text.replace("<svg", "<svg width='200' height='200'")
 
-sentence = f"<div style='display: flex; align-items: flex-end;'> \
-                <h1 style='margin-right: 0; padding-right: 0;'>{modified_svg_text}</strong></h1> \
-                <strong><h2 style='margin-bottom: 55px;;'>- AI рецепты для каждого!</h2> \
-            </div>"
+# sentence = f"<div style='display: flex; align-items: flex-end;'> \
+#                 <h1 style='margin-right: 0; padding-right: 0;'>{modified_svg_text}</strong></h1> \
+#                 <strong><h2 style='margin-bottom: 55px;;'>- AI рецепты для каждого!</h2> \
+#             </div>"
 
 # Display the sentence using markdown
-st.markdown(sentence, unsafe_allow_html=True)
+st.markdown(modified_svg_text, unsafe_allow_html=True)
 # # Add the title
-# st.markdown("# Scoop - AI рецепты для каждого!")
+st.markdown("# AI рецепты для каждого!")
 
 
 def main():
