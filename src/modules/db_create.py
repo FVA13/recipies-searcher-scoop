@@ -4,8 +4,8 @@ import torch
 from sentence_transformers import SentenceTransformer
 import sqlite3
 
-import logging
 import os
+import logging
 from collections import Counter
 
 # import sys
@@ -16,7 +16,6 @@ from functions import json_to_norm_list, flatten_lists
 
 # from scoop.functions import json_to_norm_list, flatten_lists
 
-# logging.basicConfig(level=logging.INFO)
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
 pandarallel.initialize(progress_bar=False, verbose=0)
@@ -42,15 +41,15 @@ def insert_into_db(df, table_name):
         print("Failed to connect with sqlite3 database", error)
 
 
-def read_from_db(query):
-    # conn = sqlite3.connect("../data/processed/scoop.db")
-    conn = sqlite3.connect("../../data/processed/scoop.db")
+def read_from_db(query, database="../../data/processed/scoop.db"):
+    conn = sqlite3.connect(database)
     df = pd.read_sql(query, conn)
     return df
 
 
 def create_products_data():
     logger.info("update/creation of products table has begun")
+    model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2", device=device)
     df = (
         pd.read_csv("../../data/raw/povarenok_recipes_2021_06_16.csv").dropna(
             subset=["ingredients"]
@@ -62,9 +61,18 @@ def create_products_data():
             Counter(flatten_lists(df)).most_common(), columns=["product", "qnt"]
         )
         .assign(occurrence_in_recipies=lambda df_: df_.qnt / len(df))
+        .assign(
+            embedding=lambda df_: df_["product"].apply(
+                lambda x: model.encode(
+                    x, convert_to_tensor=True, show_progress_bar=False
+                )
+                .numpy()
+            )
+        )
         .reset_index()
         .rename(columns={"index": "id"})
     )
+    print(data)
     insert_into_db(data, "products")
     logger.info(
         "products table was successfully created/updated; {} entries were added".format(
@@ -118,6 +126,7 @@ def create_recipies_data():
         )
     )
     # data.to_pickle("dbo_recipies.pkl")
+    print(data)
     insert_into_db(data, "recipies")
     logger.info(
         "recipies table was successfully created/updated; {} entries were added".format(
