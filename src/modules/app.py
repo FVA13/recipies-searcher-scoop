@@ -19,7 +19,9 @@ st.set_page_config(
 st.markdown("<br>", unsafe_allow_html=True)
 
 # logo_path = os.path.abspath("logo.svg")
-with open('logo.svg', "r") as f:
+path = os.path.dirname(__file__)
+logo_path = path+'/logo.svg'
+with open(logo_path, "r") as f:
     svg_text = f.read()
 
 modified_svg_text = svg_text.replace("<svg", "<svg width='200' height='200'")
