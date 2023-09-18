@@ -1,3 +1,4 @@
+import os
 import pandas as pd
 from PIL import Image
 import streamlit as st
@@ -17,13 +18,11 @@ st.set_page_config(
 """
 st.markdown("<br>", unsafe_allow_html=True)
 
-with open("../../logo.svg", "r") as f:
+
+with open(os.path.abspath("../../logo.svg"), "r") as f:
     svg_text = f.read()
 
 modified_svg_text = svg_text.replace("<svg", "<svg width='200' height='200'")
-# st.markdown(modified_svg_text, unsafe_allow_html=True)
-# Create the sentence with the logo as the first word
-# sentence = f" <strong> <h1> {modified_svg_text}- AI рецепты для каждого!</h1>"
 
 sentence = f"<div style='display: flex; align-items: flex-end;'> \
                 <h1 style='margin-right: 0; padding-right: 0;'>{modified_svg_text}</strong></h1> \
