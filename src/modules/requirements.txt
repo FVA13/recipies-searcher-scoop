@@ -1,8 +1,12 @@
-gdown==4.7.1
+googletrans==4.0.0rc1
+numpy==1.24.0
 pandarallel==1.6.5
 pandas==1.5.3
-python_Levenshtein==0.21.1
+Pillow==9.4.0
+Pillow==10.1.0
+python_Levenshtein==0.23.0
+Requests==2.31.0
 sentence_transformers==2.2.2
 streamlit==1.26.0
-torch==2.0.1
+torch==2.1.0
 urllib3==1.26.16
