@@ -43,7 +43,7 @@ def get_products_matches(products_input: str):
 
     # identify matches between users input and our database
     matches = []
-    for product, embedding in zip(products, products_embeddings):
+    for product, name_embedding in zip(products, products_embeddings):
         closest_match_id = (
             db_products.assign(
                 lev_distance=lambda df_: df_["product"].apply(
@@ -51,8 +51,8 @@ def get_products_matches(products_input: str):
                 )
             )
             .assign(
-                cos_sim=lambda df_: df_["embedding"].apply(
-                    lambda x: x @ embedding / (norm(x) * norm(embedding))
+                cos_sim=lambda df_: df_["name_embedding"].apply(
+                    lambda x: x @ name_embedding / (norm(x) * norm(name_embedding))
                 )
             )
             .sort_values(by="cos_sim", ascending=False)
@@ -96,23 +96,24 @@ def lists_match(l, matches, match_type: str = "full", return_type: str = "bool")
         return cntr >= 1
 
 
-def get_matching_recipies(
+def get_matching_recipes(
     products_include: str, products_exclude: str = None, text_description: str = None
 ):
-    logger.info("def call: get_matching_recipies")
+    logger.info("def call: get_matching_recipes")
 
     # get recipes data
     data_dir = "../../data"
     processed_dir = f"{data_dir}/processed"
-    dbo_products_path = f"{processed_dir}/dbo_recipies.pkl"
+    dbo_products_path = f"{processed_dir}/dbo_recipes.pkl"
 
     if os.path.exists(dbo_products_path):
         recipes = pd.read_pickle(dbo_products_path)
+        print(recipes.columns)
     else:
         logger.info("downloading data from S3")
         opener = urllib.request.URLopener()
         recipes = pd.read_pickle(
-            opener.open("https://storage.yandexcloud.net/scoop/dbo_recipies.pkl")
+            opener.open("https://storage.yandexcloud.net/scoop/dbo_recipes.pkl")
         )
         logger.info("[DONE] downloading data from S3")
 
@@ -149,20 +150,25 @@ def get_matching_recipies(
                 lambda x: lists_match(x, matches_exclude)
             )
         )
-        .query("~matches_exclude")
+        # .query("~matches_exclude")
         # .query("is_full_match")
         .dropna()
         .sort_values(
             by=["is_full_match", "matches_qnt", "ingredients_qnt"],
             ascending=[False, False, True],
         )
+        .pipe(lambda df: df[df['instructions'].apply(lambda x: x != [])])
         .reset_index(drop=True)
         # .drop(columns=["is_match", "is_full_match"])
-        .head(10)[["name", "ingredients", "is_full_match", "ingredients_qnt", "matches_qnt"]]
+        .head(100)
+        [['name', 'ingredients', 'instructions', 'description', 'ingredients_substitutes', 'recycling_recommendations']]
+        # .pipe(lambda df_: df_[df_['instructions'].notna()])
+        # .query("instructions != '[]'")
+        # .astype(str)
     )
     # print(df)
     return df
 
 
-# get_matching_recipies("Молоко, Клубнка Сахар")
+# get_matching_recipes("Молоко, Клубнка Сахар")
 # помидор окурец чеснок
